@@ -29,6 +29,13 @@ jobs:
       - run: npm run build
         env:
           PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+      - name: Snapshot site for link previews (og.png)
+        run: |
+          npm i --no-save playwright-core@1.49.1
+          (cd out && python3 -m http.server 8080 >/dev/null 2>&1 &)
+          sleep 2
+          SNAP_URL="http://localhost:8080/" node scripts/og-snapshot.mjs
+          test -s out/og.png
       - run: touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
